@@ -1,0 +1,22 @@
+---
+- name: Change /etc/motd
+  hosts: all
+  become: yes
+  tasks:
+    - name: Change value in proxy
+      copy:
+        content: "Welcome to HProxy server"
+        dest: /etc/motd
+      when: "'proxy' in {{group_names}}"
+    
+    - name: Change value in webservers
+      copy:
+        content: "Welcome to Apache server"
+        dest: /etc/motd
+      when: "'webservers' in {{group_names}}"
+    
+    - name: Change value in database
+      copy:
+        content: "Welcome to MySQL server"
+        dest: /etc/motd
+      when: "'database' in {{group_names}}"

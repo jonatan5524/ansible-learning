@@ -1,0 +1,5 @@
+#!/bin/bash
+
+ansible all -b -m user -a "name=automation shell=/bin/bash createhome=yes group=wheel"
+ansible all -b -m authorized_key -a "user=automation key=\"{{lookup(\"file\", \"/home/automation/.ssh/id_rsa.pub\")}}\""
+ansible all -b -m lineinfile -a "path=/etc/sudoers state=present line='automation ALL=(ALL) NOPASSWD: ALL'"
