@@ -1,0 +1,17 @@
+---
+ - name: Change sshd config
+   hosts: all
+   become: yes
+   tasks:
+     - name: Change Banner
+       ansible.builtin.lineinfile:
+         path: /etc/ssh/sshd_config
+         line: Banner /etc/motd
+     - name: Disable X11Forwarding
+       ansible.builtin.lineinfile:
+         path: /etc/ssh/sshd_config
+         line: X11Forwarding no
+     - name: Change max auth tries
+       ansible.builtin.lineinfile:
+         path: /etc/ssh/sshd_config
+         line: MaxAuthTries 3
