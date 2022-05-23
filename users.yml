@@ -1,0 +1,88 @@
+---
+  - name: Add users and groups to servers
+    hosts: all
+    become: yes
+    vars_files: 
+      - './vars/user_list.yml'
+      - './secret.yml'
+    tasks:
+      - name: Add users to webservers
+        user:
+          name: '{{ item.username }}'
+          uid: '{{ item.uid }}'
+          password: '{{ user_password | password_hash("sha512") }}'
+          shell: /bin/bash
+          createhome: yes
+          group: wheel
+        when: 
+          - 'item.uid | string | first == "1"'
+          - '"webservers" in {{ group_names }}'
+        loop: '{{ users }}'
+      - name: Add users to database
+        user:
+          name: '{{ item.username }}'
+          uid: '{{ item.uid }}'
+          password: '{{ user_password | password_hash("sha512") }}'
+          shell: /bin/bash
+          createhome: yes
+          group: wheel
+        when: 
+          - 'item.uid | string | first == "2"'
+          - '"database" in {{ group_names }}'
+        loop: '{{ users }}'
+      - name: create ssh directory for webservers
+        file:
+          path: '/home/{{ item.username }}/.ssh'
+          state: directory
+          mode: 0700
+          owner: '{{ item.username }}'
+        loop: '{{ users }}'
+        when: 
+          - 'item.uid | string | first == "1"'
+          - '"webservers" in {{ group_names }}'
+      - name: create ssh directory for database
+        file:
+          path: '/home/{{ item.username }}/.ssh'
+          state: directory
+          mode: 0700
+          owner: '{{ item.username }}'
+        loop: '{{ users }}'
+        when: 
+          - 'item.uid | string | first == "2"'
+          - '"database" in {{ group_names }}'
+      - name: add private keys for webservers
+        copy:
+          src: '/home/automation/.ssh/id_rsa'
+          dest: '/home/{{ item.username }}/.ssh'
+          mode: 0600
+          owner: '{{ item.username }}'
+        loop: '{{ users }}'
+        when: 
+          - 'item.uid | string | first == "1"'
+          - '"webservers" in {{ group_names }}'
+      - name: add private keys for database
+        copy:
+          src: '/home/automation/.ssh/id_rsa'
+          dest: '/home/{{ item.username }}/.ssh'
+          mode: 0600
+          owner: '{{ item.username }}'
+        loop: '{{ users }}'
+        when: 
+          - 'item.uid | string | first == "2"'
+          - '"database" in {{ group_names }}'
+      - name: add public keys for webservers
+        authorized_key:
+          key: '{{ lookup("file", "/home/automation/.ssh/id_rsa.pub") }}'
+          user: '{{ item.username }}'
+        loop: '{{ users }}'
+        when: 
+          - 'item.uid | string | first == "1"'
+          - '"webservers" in {{ group_names }}'
+      - name: add public keys for database
+        authorized_key:
+          key: '{{ lookup("file", "/home/automation/.ssh/id_rsa.pub") }}'
+          user: '{{ item.username }}'
+        loop: '{{ users }}'
+        when: 
+          - 'item.uid | string | first == "2"'
+          - '"database" in {{ group_names }}'
