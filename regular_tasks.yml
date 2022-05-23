@@ -1,0 +1,15 @@
+---
+  - name: Scheduled tasks in proxy
+    hosts: proxy
+    become: yes
+    tasks:
+      - name: add cron job 
+        cron:
+          name: 'log the date every hour'
+          user: root
+          weekday: '*'
+          month: '*'
+          day: '*'
+          hour: '*'
+          hour: '0'
+          job: date >> /var/log/time.log
