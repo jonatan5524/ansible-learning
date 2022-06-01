@@ -1,0 +1,7 @@
+---
+- name: Create and configure MySQL 
+  hosts: database
+  become: yes
+  vars_files: './secret.yml'
+  roles:
+    - sample-mysql
