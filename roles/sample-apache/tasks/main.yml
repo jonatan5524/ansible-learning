@@ -24,12 +24,6 @@
     - http
     - https
 
-- name: permit traffic in default zone for http service
-  ansible.posix.firewalld:
-    service: http
-    permanent: yes
-    state: enabled
-
 - name: Copy index.html
   template:
     src: index.html.j2
