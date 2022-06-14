@@ -1,0 +1,15 @@
+---
+- hosts: database
+  become: yes
+  tasks:
+    - name: create fact directory
+      file:
+        path: /etc/ansible/facts.d/
+        state: directory
+    - name: create a static custom fact custom.sample_exam
+      copy:
+        content: "[sample_exam]\nserver_role=mysql\n"
+        dest: /etc/ansible/facts.d/custom.fact
+    - name:
+      debug:
+        msg: "{{ ansible_local.custom.sample_exam }}"
