@@ -1,0 +1,23 @@
+---
+- name: Create and configure HAProxy 
+  hosts: proxy
+  become: yes
+  roles:
+    - role: geerlingguy.haproxy
+      vars:
+        haproxy_backend_balance_method: "roundrobin"
+        haproxy_backend_mode: "http"
+        haproxy_backend_servers:
+          - name: app1
+            address: ansible3.hl.local:80
+          - name: app2
+            address: ansible4.hl.local:80
+  tasks:
+    - name: Permit traffic on port 3306 for MySQL
+      firewalld:
+        port: "80/tcp"
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+  
