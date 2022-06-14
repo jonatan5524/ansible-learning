@@ -1,0 +1,14 @@
+---
+- name: configure archive databases
+  hosts: database
+  become: yes
+  tasks:
+    - name: create database_list
+      copy:
+        dest: /mnt/mysql_backups/database_list.txt
+        content: "dev,test,qa,prod"
+    - name: gzip database_list
+      archive:
+        path: /mnt/mysql_backups/database_list.txt
+        dest: /mnt/mysql_backups/archive.gz
+        format: gz
