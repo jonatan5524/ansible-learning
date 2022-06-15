@@ -1,0 +1,19 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: install tcpdump
+      yum:
+        name: tcpdump
+        state: present
+      when: "'proxy' in {{group_names}}"
+    - name: install lsof
+      yum:
+        name: lsof
+        state: present
+      when: "'database' in {{group_names}}"
+    - name: install mailx
+      yum:
+        name: mailx
+        state: present
+      when: "('proxy' in {{group_names}}) or ('database' in {{group_names}})"
